@@ -9,10 +9,19 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/webpack-config": "^18.0.1",
+    "d3": "^7.8.2",
     "expo": "~47.0.12",
     "expo-status-bar": "~1.4.2",
-    "react": "18.1.0",
-    "react-native": "0.70.5"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.0",
+    "react-native": "^0.71.2",
+    "react-native-svg": "^13.8.0",
+    "react-native-web": "^0.18.12",
+    "resize-observer-polyfill": "^1.5.1",
+    "topojson": "^3.0.2",
+    "topojson-client": "^3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

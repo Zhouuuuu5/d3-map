@@ -1,11 +1,21 @@
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Dimensions } from 'react-native';
+
+import StateChart from "./src/components/StateMap.js";
+import Map from "./src/components/Map.js";
+
+import data from "./src/constants/us-states.json";
 
 export default function App() {
+  const [property, setProperty] = useState("pop_est");
+  const dimensions = Dimensions.get("window");
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      {/* uncomment the below line to show state map. */}
+      {/* <StateChart data={data} property={property}/> */}
+      <Map dimensions={dimensions}/>
     </View>
   );
 }

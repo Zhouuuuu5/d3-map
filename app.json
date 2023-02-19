@@ -28,6 +28,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2ca82d4f-7cdf-40ea-9c33-232e335da0cd"
+      }
+    },
+    "owner": "joyvivian"
   }
 }
