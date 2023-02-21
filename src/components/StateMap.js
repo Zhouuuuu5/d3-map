@@ -2,6 +2,15 @@ import React, { useRef, useEffect, useState } from "react";
 import { select, geoPath, geoAlbersUsa, min, max, scaleLinear } from "d3";
 import useResizeObserver from "../useResizeObserver";
 import { Dimensions } from "react-native";
+import _ from 'lodash';
+
+import * as d3 from 'd3';
+
+const jdata = require('../../assets/data.json');
+
+import './StateMap.css';
+import tinycolor from "tinycolor2";
+
 
 /**
  * Component that renders a map of Germany.
@@ -32,10 +41,7 @@ function StateChart({ data, property }) {
       data.features,
       (feature) => feature.properties[property]
     );
-    const colorScale = scaleLinear()
-      .domain([minProp, maxProp])
-      .range(["#ccc", "yellow"]);
-
+  
     // use resized dimensions
     // but fall back to getBoundingClientRect, if no dimensions yet.
     // const { width, height } =
@@ -57,14 +63,62 @@ function StateChart({ data, property }) {
     // takes geojson data,
     // transforms that into the d attribute of a path element
     const path = geoPath().projection(projection);
+    
+     // Don't use local mock data due to broswer security reason. 
+  // Load mock data from JSONbin instead.
+  let fetchMockData = async () => {
+    let url = "https://api.jsonbin.io/v3/b/63f53344ebd26539d082ca62";
+    let response = await fetch(url);
+    return response.json();
+  };
 
-    svg
-      .selectAll("path")
-      .data(data.features)
-      .enter()
-      .append("path")
-      .attr("d", path);
+  let colorScale = d3.scaleThreshold()
+  .domain([0, 1, 2, 5, 10])
+  .range(["#313131", "#706C00", "rgb(169,164,3)", "#D7CF00", "#FFF500"]);
+  
+  fetchMockData()
+    .then(response => {
+      return Promise.all([response, d3.json('https://gist.githubusercontent.com/JoyVivian/53b03177dda52ee9ddf4f4d12fb0dbe8/raw/ee4f380bcc12330aa0a1fb94540001898ca0152e/us-states.json')]);
+    })
+    .then(([response, uState]) => {
+      _(uState.features)
+        .keyBy('properties.name')
+        .merge(_.keyBy(response.record, 'state'))
+        .values()
+        .value();
+  
+      svg
+        .selectAll("path")
+        .data(uState.features)
+        .enter()
+        .append("path")
+        .attr("d", path)
+        .attr('transition', "all 0.2s ease-in-out")
+        .attr('class', 'state')
+        .style('fill', (d, i) => {
+          let crimes = d.crime;
+          return crimes ? colorScale(crimes) : "#313131";
+        })
+        .on('mouseover', (event, d) => {
+          d3.select(event.target)
+          .style("fill", tinycolor(colorScale(d.crime)).darken(15).toString())
+          .style("cursor", "pointer");
+        })
+        .on('mouseout', (event, d) => {
+          d3.select(event.target)
+          .style("fill", () => {
+            let crimes = d.crime;
+            return crimes ? colorScale(crimes) : "#313131";
+          });
+        });
+    })
+    .catch(error => {
+      console.error('An error occurred:', error);
+    });
+
   }, [data, dimensions, property, selectedCountry]);
+
+ 
 
   return (
     <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>

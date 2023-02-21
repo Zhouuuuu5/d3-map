@@ -1,0 +1,163 @@
+[
+    {
+      "state": "Alabama",
+      "crime": 78
+    },
+    {
+      "state": "Alaska",
+      "crime": 65
+    },
+    {
+      "state": "Arizona",
+      "crime": 89
+    },
+    {
+      "state": "Arkansas",
+      "crime": 70
+    },
+    {
+      "state": "California",
+      "crime": 95
+    },
+    {
+      "state": "Colorado",
+      "crime": 85
+    },
+    {
+      "state": "Connecticut",
+      "crime": 60
+    },
+    {
+      "state": "Delaware",
+      "crime": 72
+    },
+    {
+      "state": "Florida",
+      "crime": 92
+    },
+    {
+      "state": "Georgia",
+      "crime": 79
+    },
+    {
+      "state": "Hawaii",
+      "crime": 40
+    },
+    {
+      "state": "Idaho",
+      "crime": 50
+    },
+    {
+      "state": "Illinois",
+      "crime": 88
+    },
+    {
+      "state": "Indiana",
+      "crime": 75
+    },
+    {
+      "state": "Iowa",
+      "crime": 58
+    },
+    {
+      "state": "Kansas",
+      "crime": 67
+    },
+    {
+      "state": "Kentucky",
+      "crime": 72
+    },
+    {
+      "state": "Louisiana",
+      "crime": 80
+    },
+    {
+      "state": "Maine",
+      "crime": 45
+    },
+    {
+      "state": "Maryland",
+      "crime": 84
+    },
+    {
+      "state": "Massachusetts",
+      "crime": 62
+    },
+    {
+      "state": "Michigan",
+      "crime": 80
+    },
+    {
+      "state": "Minnesota",
+      "crime": 55
+    },
+    {
+      "state": "Mississippi",
+      "crime": 76
+    },
+    {
+      "state": "Missouri",
+      "crime": 78
+    },
+    {
+      "state": "Montana",
+      "crime": 47
+    },
+    {
+      "state": "Nebraska",
+      "crime": 62
+    },
+    {
+      "state": "Nevada",
+      "crime": 87
+    },
+    {
+      "state": "New Hampshire",
+      "crime": 50
+    },
+    {
+      "state": "New Jersey",
+      "crime": 80
+    },
+    {
+      "state": "New Mexico",
+      "crime": 70
+    },
+    {
+      "state": "New York",
+      "crime": 75
+    },
+    {
+      "state": "North Carolina",
+      "crime": 77
+    },
+    {
+      "state": "North Dakota",
+      "crime": 42
+    },
+    {
+      "state": "Ohio",
+      "crime": 76
+    },
+    {
+      "state": "Oklahoma",
+      "crime": 69
+    },
+    {
+      "state": "Oregon",
+      "crime": 65
+    },
+    {
+      "state": "Pennsylvania",
+      "crime": 74
+    },
+    {
+      "state": "Rhode Island",
+      "crime": 55
+    },
+    {
+      "state": "South Carolina",
+      "crime": 77
+    }
+]
+  

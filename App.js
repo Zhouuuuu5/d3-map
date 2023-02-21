@@ -17,7 +17,6 @@ export default function App() {
       {/* uncomment the below line to show state map. */}
       {/* <Chart /> */}
       <StateChart data={data} property={property} dimensions={dimensions} />
-      <Map dimensions={dimensions} />
     </View>
   );
 }
