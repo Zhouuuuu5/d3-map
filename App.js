@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import React, { useState } from "react";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, Dimensions } from "react-native";
 
 import StateChart from "./src/components/StateMap.js";
 import Map from "./src/components/Map.js";
+// import { Chart } from "./src/components/UnemploymentMap.js";
 
 import data from "./src/constants/us-states.json";
 
@@ -14,8 +15,9 @@ export default function App() {
   return (
     <View style={styles.container}>
       {/* uncomment the below line to show state map. */}
-      {/* <StateChart data={data} property={property}/> */}
-      <Map dimensions={dimensions}/>
+      {/* <Chart /> */}
+      <StateChart data={data} property={property} dimensions={dimensions} />
+      <Map dimensions={dimensions} />
     </View>
   );
 }
@@ -23,8 +25,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
