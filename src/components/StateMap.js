@@ -1,19 +1,20 @@
 import React, { useRef, useEffect, useState } from "react";
-import { select, geoPath, geoAlbersUsa, min, max, scaleLinear } from "d3";
+import { select, geoPath, geoAlbersUsa, min, max} from "d3";
 import useResizeObserver from "../useResizeObserver";
 import { Dimensions } from "react-native";
 import _ from 'lodash';
-
+import tinycolor from "tinycolor2";
 import * as d3 from 'd3';
-
-const jdata = require('../../assets/data.json');
+import { legendColor } from "d3-svg-legend";
+import { scaleThreshold } from "d3-scale";
 
 import './StateMap.css';
-import tinycolor from "tinycolor2";
+
+
 
 
 /**
- * Component that renders a map of Germany.
+ * Component that renders a map of US states.
  */
 
 function StateChart({ data, property }) {
@@ -72,7 +73,7 @@ function StateChart({ data, property }) {
     return response.json();
   };
 
-  let colorScale = d3.scaleThreshold()
+  let colorScale = scaleThreshold()
   .domain([0, 1, 2, 5, 10])
   .range(["#313131", "#706C00", "rgb(169,164,3)", "#D7CF00", "#FFF500"]);
   
@@ -116,9 +117,17 @@ function StateChart({ data, property }) {
       console.error('An error occurred:', error);
     });
 
-  }, [data, dimensions, property, selectedCountry]);
+    const legend = legendColor()
+    .scale(colorScale)
+    .labels(["0", "1", "2-4", "5-9", "10+"])
+    .title("Crime Rate")
 
- 
+    const legendGroup = svg.append("g")
+    .attr("transform", "translate(20, 20)");
+
+    legendGroup.call(legend);
+
+  }, [data, dimensions, property, selectedCountry]);
 
   return (
     <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
