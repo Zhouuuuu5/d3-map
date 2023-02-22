@@ -6,7 +6,9 @@ import _ from 'lodash';
 import tinycolor from "tinycolor2";
 import * as d3 from 'd3';
 import { legendColor } from "d3-svg-legend";
-import { scaleThreshold } from "d3-scale";
+import d3Tip from "d3-tip";
+
+
 
 import './StateMap.css';
 
@@ -73,10 +75,19 @@ function StateChart({ data, property }) {
     return response.json();
   };
 
-  let colorScale = scaleThreshold()
+  let colorScale = d3.scaleThreshold()
   .domain([0, 1, 2, 5, 10])
   .range(["#313131", "#706C00", "rgb(169,164,3)", "#D7CF00", "#FFF500"]);
   
+  let tip = d3Tip()
+  .attr('class', "d3-tip")
+  .offset([-10, 0])
+  .html((d) => {
+    return `<div class="tip-content"><span>State: ${d.properties.name}</span><br/><span>Crime rate: ${
+      d.crime || 0
+    }</span></div>`;
+  });
+
   fetchMockData()
     .then(response => {
       return Promise.all([response, d3.json('https://gist.githubusercontent.com/JoyVivian/53b03177dda52ee9ddf4f4d12fb0dbe8/raw/ee4f380bcc12330aa0a1fb94540001898ca0152e/us-states.json')]);
@@ -87,7 +98,7 @@ function StateChart({ data, property }) {
         .merge(_.keyBy(response.record, 'state'))
         .values()
         .value();
-  
+      
       svg
         .selectAll("path")
         .data(uState.features)
@@ -104,6 +115,15 @@ function StateChart({ data, property }) {
           d3.select(event.target)
           .style("fill", tinycolor(colorScale(d.crime)).darken(15).toString())
           .style("cursor", "pointer");
+
+          tip.show(d, event.target);
+
+          d3.selectAll('.d3-tip')
+          .selectAll('.tip-content')
+          .style('background-color', 'rgb(16,16,16)')
+          .style('color', 'white')
+          .style('padding', '5px');
+
         })
         .on('mouseout', (event, d) => {
           d3.select(event.target)
@@ -111,12 +131,16 @@ function StateChart({ data, property }) {
             let crimes = d.crime;
             return crimes ? colorScale(crimes) : "#313131";
           });
+
+          tip.hide();
         });
     })
     .catch(error => {
       console.error('An error occurred:', error);
     });
 
+    svg.call(tip);
+    
     const legend = legendColor()
     .scale(colorScale)
     .labels(["0", "1", "2-4", "5-9", "10+"])
@@ -126,6 +150,8 @@ function StateChart({ data, property }) {
     .attr("transform", "translate(20, 20)");
 
     legendGroup.call(legend);
+
+    
 
   }, [data, dimensions, property, selectedCountry]);
 
