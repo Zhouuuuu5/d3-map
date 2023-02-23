@@ -34,7 +34,7 @@ function StateChart({ data, property }) {
   useEffect(() => {
     const svg = select(svgRef.current)
       .attr("width", minWH * 2)
-      .attr("height", minWH); //width 1200, height 600
+      .attr("height", minWH * 1.5); //width 1200, height 600
 
     const minProp = min(
       data.features,
@@ -58,7 +58,7 @@ function StateChart({ data, property }) {
 
     const projection = geoAlbersUsa()
       .translate([width, height])
-      .fitSize([minWH * 1.5, minWH], {
+      .fitSize([width, height], {
         type: "FeatureCollection",
         features: data.features,
       });
@@ -105,6 +105,7 @@ function StateChart({ data, property }) {
         .enter()
         .append("path")
         .attr("d", path)
+        .attr('transform', `translate(70, 20)`)
         .attr('transition', "all 0.2s ease-in-out")
         .attr('class', 'state')
         .style('fill', (d, i) => {
