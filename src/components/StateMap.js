@@ -7,8 +7,26 @@ import * as d3 from "d3";
 import { legendColor } from "d3-svg-legend";
 // import d3Tip from "d3-tip";
 import { Svg, Path } from "react-native-svg";
+import { Tooltip, lightColors } from '@rneui/themed';
 
 import Legend from "./MapLegend";
+
+
+const ControlledTooltip = (props) => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <Tooltip
+      visible={open}
+      onOpen={() => {
+        setOpen(true);
+      }}
+      onClose={() => {
+        setOpen(false);
+      }}
+      {...props}
+    />
+  );
+};
 
 /**
  * Component that renders a map of US states.
@@ -56,20 +74,6 @@ function StateChart({ data, property }) {
 
   const colors = legend.cells().map((cell) => cell.label);
   const labels = legend.labels();
-
-  const showTooltip = (event, data) => {
-    const tooltip = tooltipRef.current;
-    tooltip.style.opacity = 1;
-    tooltip.style.left = event.nativeEvent.pageX + "px";
-    tooltip.style.top = event.nativeEvent.pageY + "px";
-    tooltip.innerHTML = `<div>${data.properties.name}</div>
-                         <div>Crime rate: ${data.crime}</div>`;
-  };
-
-  const hideTooltip = () => {
-    const tooltip = tooltipRef.current;
-    tooltip.style.opacity = 0;
-  };
 
   // Will be called initially and on every data change
   useEffect(() => {
@@ -127,7 +131,8 @@ function StateChart({ data, property }) {
             }
 
             return (
-              <Path
+              <ControlledTooltip popover={<Text>Test</Text>} width={200} backgroundColor={lightColors.primary}>
+                   <Path
                 key={i}
                 d={path(d)}
                 transform={`translate(70, 20)`}
@@ -135,6 +140,8 @@ function StateChart({ data, property }) {
                 stroke="gray"
                 fill={fill}
               />
+              </ControlledTooltip>
+             
             );
           })}
       </Svg>
