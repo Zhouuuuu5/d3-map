@@ -7,26 +7,8 @@ import * as d3 from "d3";
 import { legendColor } from "d3-svg-legend";
 // import d3Tip from "d3-tip";
 import { Svg, Path } from "react-native-svg";
-import { Tooltip, lightColors } from '@rneui/themed';
 
 import Legend from "./MapLegend";
-
-
-const ControlledTooltip = (props) => {
-  const [open, setOpen] = React.useState(false);
-  return (
-    <Tooltip
-      visible={open}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      onClose={() => {
-        setOpen(false);
-      }}
-      {...props}
-    />
-  );
-};
 
 /**
  * Component that renders a map of US states.
@@ -131,8 +113,7 @@ function StateChart({ data, property }) {
             }
 
             return (
-              <ControlledTooltip popover={<Text>Test</Text>} width={200} backgroundColor={lightColors.primary}>
-                   <Path
+              <Path
                 key={i}
                 d={path(d)}
                 transform={`translate(70, 20)`}
@@ -140,8 +121,6 @@ function StateChart({ data, property }) {
                 stroke="gray"
                 fill={fill}
               />
-              </ControlledTooltip>
-             
             );
           })}
       </Svg>
