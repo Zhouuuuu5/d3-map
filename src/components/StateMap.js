@@ -1,19 +1,14 @@
 import React, { useRef, useEffect, useState } from "react";
-import { select, geoPath, geoAlbersUsa, min, max} from "d3";
-import useResizeObserver from "../useResizeObserver";
-import { Dimensions } from "react-native";
-import _ from 'lodash';
+import { select, geoPath, geoAlbersUsa } from "d3";
+import { Dimensions, View, Text } from "react-native";
+import _ from "lodash";
 import tinycolor from "tinycolor2";
-import * as d3 from 'd3';
+import * as d3 from "d3";
 import { legendColor } from "d3-svg-legend";
-import d3Tip from "d3-tip";
+// import d3Tip from "d3-tip";
+import { Svg, Path } from "react-native-svg";
 
-
-
-import './StateMap.css';
-
-
-
+import Legend from "./MapLegend";
 
 /**
  * Component that renders a map of US states.
@@ -22,144 +17,128 @@ import './StateMap.css';
 function StateChart({ data, property }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
-  const dimensions = useResizeObserver(wrapperRef);
-  const [selectedCountry, setSelectedCountry] = useState(null);
-  const deviceSize = Dimensions.get("window");
+  const tooltipRef = useRef();
+  const deviceSize = Dimensions.get("screen");
 
   const minWH =
     deviceSize.width > deviceSize.height
       ? deviceSize.height / 2
       : deviceSize.width / 2;
-  // will be called initially and on every data change
-  useEffect(() => {
-    const svg = select(svgRef.current)
-      .attr("width", minWH * 2)
-      .attr("height", minWH * 1.5); //width 1200, height 600
 
-    const minProp = min(
-      data.features,
-      (feature) => feature.properties[property]
-    );
-    const maxProp = max(
-      data.features,
-      (feature) => feature.properties[property]
-    );
-  
-    // use resized dimensions
-    // but fall back to getBoundingClientRect, if no dimensions yet.
-    // const { width, height } =
-    //   dimensions || wrapperRef.current.getBoundingClientRect();
+  // Set up color scale.
+  let colorScale = d3
+    .scaleThreshold()
+    .domain([0, 1, 2, 5, 10])
+    .range(["#313131", "#706C00", "rgb(169,164,3)", "#D7CF00", "#FFF500"]);
 
-    const width = minWH * 1.5; //487.5;
-    const height = minWH; //305;
-    console.log(dimensions);
-    console.log(width);
-    console.log(height);
+  const [uState, setUState] = useState([]);
 
-    const projection = geoAlbersUsa()
-      .translate([width, height])
-      .fitSize([width, height], {
-        type: "FeatureCollection",
-        features: data.features,
-      });
+  // Set the width and height of the map.
+  const width = minWH * 1.5;
+  const height = minWH;
 
-    // takes geojson data,
-    // transforms that into the d attribute of a path element
-    const path = geoPath().projection(projection);
-    
-     // Don't use local mock data due to broswer security reason. 
-  // Load mock data from JSONbin instead.
-  let fetchMockData = async () => {
-    let url = "https://api.jsonbin.io/v3/b/63f53344ebd26539d082ca62";
-    let response = await fetch(url);
-    return response.json();
-  };
-
-  let colorScale = d3.scaleThreshold()
-  .domain([0, 1, 2, 5, 10])
-  .range(["#313131", "#706C00", "rgb(169,164,3)", "#D7CF00", "#FFF500"]);
-  
-  let tip = d3Tip()
-  .attr('class', "d3-tip")
-  .offset([-10, 0])
-  .html((d) => {
-    return `<div class="tip-content"><span>State: ${d.properties.name}</span><br/><span>Crime rate: ${
-      d.crime || 0
-    }</span></div>`;
-  });
-
-  fetchMockData()
-    .then(response => {
-      return Promise.all([response, d3.json('https://gist.githubusercontent.com/JoyVivian/53b03177dda52ee9ddf4f4d12fb0dbe8/raw/ee4f380bcc12330aa0a1fb94540001898ca0152e/us-states.json')]);
-    })
-    .then(([response, uState]) => {
-      _(uState.features)
-        .keyBy('properties.name')
-        .merge(_.keyBy(response.record, 'state'))
-        .values()
-        .value();
-      
-      svg
-        .selectAll("path")
-        .data(uState.features)
-        .enter()
-        .append("path")
-        .attr("d", path)
-        .attr('transform', `translate(70, 20)`)
-        .attr('transition', "all 0.2s ease-in-out")
-        .attr('class', 'state')
-        .style('fill', (d, i) => {
-          let crimes = d.crime;
-          return crimes ? colorScale(crimes) : "#313131";
-        })
-        .on('mouseover', (event, d) => {
-          d3.select(event.target)
-          .style("fill", tinycolor(colorScale(d.crime)).darken(15).toString())
-          .style("cursor", "pointer");
-
-          tip.show(d, event.target);
-
-          d3.selectAll('.d3-tip')
-          .selectAll('.tip-content')
-          .style('background-color', 'rgb(16,16,16)')
-          .style('color', 'white')
-          .style('padding', '5px');
-
-        })
-        .on('mouseout', (event, d) => {
-          d3.select(event.target)
-          .style("fill", () => {
-            let crimes = d.crime;
-            return crimes ? colorScale(crimes) : "#313131";
-          });
-
-          tip.hide();
-        });
-    })
-    .catch(error => {
-      console.error('An error occurred:', error);
+  const projection = geoAlbersUsa()
+    .translate([width, height])
+    .fitSize([width, height], {
+      type: "FeatureCollection",
+      features: data.features,
     });
 
-    svg.call(tip);
-    
-    const legend = legendColor()
+  // Takes geojson data,
+  // Transforms that into the d attribute of a path element
+  const path = geoPath().projection(projection);
+
+  //Set up the legend.
+  const legend = legendColor()
     .scale(colorScale)
     .labels(["0", "1", "2-4", "5-9", "10+"])
-    .title("Crime Rate")
+    .title("Crime Rate");
 
-    const legendGroup = svg.append("g")
-    .attr("transform", "translate(20, 20)");
+  const colors = legend.cells().map((cell) => cell.label);
+  const labels = legend.labels();
 
-    legendGroup.call(legend);
+  const showTooltip = (event, data) => {
+    const tooltip = tooltipRef.current;
+    tooltip.style.opacity = 1;
+    tooltip.style.left = event.nativeEvent.pageX + "px";
+    tooltip.style.top = event.nativeEvent.pageY + "px";
+    tooltip.innerHTML = `<div>${data.properties.name}</div>
+                         <div>Crime rate: ${data.crime}</div>`;
+  };
 
-    
+  const hideTooltip = () => {
+    const tooltip = tooltipRef.current;
+    tooltip.style.opacity = 0;
+  };
 
-  }, [data, dimensions, property, selectedCountry]);
+  // Will be called initially and on every data change
+  useEffect(() => {
+    // Set the width and height og the whole svg.
+    const svg = select(svgRef.current);
+    // .attr("width", minWH * 2)
+    // .attr("height", minWH * 1.5);
+
+    // Don't use local mock data due to broswer security reason.
+    // Load mock data from JSONbin instead.
+    let fetchMockData = async () => {
+      let url = "https://api.jsonbin.io/v3/b/63f53344ebd26539d082ca62";
+      let response = await fetch(url);
+      let json = await response.json();
+      return json.record;
+    };
+
+    // Fetch data from JSONbin and draw the map.
+    fetchMockData()
+      .then((response) => {
+        return Promise.all([
+          response,
+          d3.json(
+            "https://gist.githubusercontent.com/JoyVivian/53b03177dda52ee9ddf4f4d12fb0dbe8/raw/ee4f380bcc12330aa0a1fb94540001898ca0152e/us-states.json"
+          ),
+        ]);
+      })
+      .then(([response, uState]) => {
+        // Merge the data from JSONbin with the geojson data using loadsh.
+        uState.features = _(uState.features)
+          .keyBy("properties.name")
+          .merge(_.keyBy(response, "state"))
+          .values()
+          .value();
+
+        setUState(uState);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  }, [data, property]);
 
   return (
-    <div ref={wrapperRef} style={{ marginBottom: "2rem" }}>
-      <svg ref={svgRef}></svg>
-    </div>
+    <View ref={wrapperRef} style={{ flexDirection: "row" }}>
+      <Legend colorScale={colorScale} />
+      <Svg ref={svgRef} width={minWH * 2} height={minWH * 1.5}>
+        {uState &&
+          uState.features &&
+          uState.features.map((d, i) => {
+            const crimes = d.crime;
+            const fill = crimes ? colorScale(crimes) : "#313131";
+
+            if (!path) {
+              return null;
+            }
+
+            return (
+              <Path
+                key={i}
+                d={path(d)}
+                transform={`translate(70, 20)`}
+                strokeWidth={1}
+                stroke="gray"
+                fill={fill}
+              />
+            );
+          })}
+      </Svg>
+    </View>
   );
 }
 

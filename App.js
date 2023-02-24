@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { StyleSheet, View, Dimensions } from "react-native";
 
 import StateChart from "./src/components/StateMap.js";
-import Map from "./src/components/Map.js";
-// import { Chart } from "./src/components/UnemploymentMap.js";
 
 import data from "./src/constants/us-states.json";
 
@@ -14,8 +11,6 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {/* uncomment the below line to show state map. */}
-      {/* <Chart /> */}
       <StateChart data={data} property={property} dimensions={dimensions} />
     </View>
   );

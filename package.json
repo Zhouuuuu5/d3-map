@@ -20,6 +20,7 @@
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.0",
     "react-native": "^0.71.2",
+    "react-native-elements": "^3.4.3",
     "react-native-svg": "^13.8.0",
     "react-native-web": "^0.18.12",
     "resize-observer-polyfill": "^1.5.1",
