@@ -3,7 +3,7 @@ import { Svg, Rect, G, Text } from "react-native-svg";
 const Legend = ({ colorScale }) => {
   const domain = colorScale.domain();
 
-  const itemWidth = 20;
+  const itemWidth = 15;
   const gap = 20;
 
   // Map the domain to a list of {color, label} objects
@@ -13,14 +13,14 @@ const Legend = ({ colorScale }) => {
   }));
 
   return (
-    <Svg width="100" height="200">
+    <Svg width="100" height="200" transform={`translate(100, 0)`}>
       {items.map((item, i) => (
         <G key={i}>
           <Rect
             x="10"
             y={i * (itemWidth + gap)}
             width={itemWidth}
-            height="20"
+            height="15"
             fill={item.color}
           />
           <Text

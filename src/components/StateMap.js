@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { select, geoPath, geoAlbersUsa } from "d3";
-import { Dimensions, View, Text } from "react-native";
+import { Dimensions, View, Text, Platform } from "react-native";
 import _ from "lodash";
 import tinycolor from "tinycolor2";
 import * as d3 from "d3";
@@ -9,6 +9,7 @@ import { legendColor } from "d3-svg-legend";
 import { Svg, Path } from "react-native-svg";
 
 import Legend from "./MapLegend";
+import Tooltip from "./MapTooltip";
 
 /**
  * Component that renders a map of US states.
@@ -57,13 +58,40 @@ function StateChart({ data, property }) {
   const colors = legend.cells().map((cell) => cell.label);
   const labels = legend.labels();
 
+  const [selectedPath, setSelectedPath] = useState(null);
+
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [tooltipContent, setTooltipContent] = useState("");
+  
+  const svg = select(svgRef.current);
+
+  const handlePressIn = (d, event) => {
+    setSelectedPath(d);
+
+    if (Platform.OS === "web") {
+      const { pageX, pageY } = event;
+      setTooltipPosition({x: pageX, y: pageY});
+       setTooltipVisible(true);
+    setTooltipContent(d.properties.name);
+    } 
+    // else {
+    //   const { pageX, pageY } = event.nativeEvent;
+    //   setTooltipPosition({ x: pageX, y: pageY });
+    // }
+   
+    // setTooltipVisible(true);
+    // setTooltipContent(d.properties.name);
+  }
+
   // Will be called initially and on every data change
   useEffect(() => {
     // Set the width and height og the whole svg.
-    const svg = select(svgRef.current);
+    
     // .attr("width", minWH * 2)
     // .attr("height", minWH * 1.5);
 
+    
     // Don't use local mock data due to broswer security reason.
     // Load mock data from JSONbin instead.
     let fetchMockData = async () => {
@@ -100,14 +128,16 @@ function StateChart({ data, property }) {
 
   return (
     <View ref={wrapperRef} style={{ flexDirection: "row" }}>
-      <Legend colorScale={colorScale} />
-      <Svg ref={svgRef} width={minWH * 2} height={minWH * 1.5}>
+        <Legend colorScale={colorScale} />
+      
+      <Svg ref={svgRef} width={minWH * 2.5} height={minWH * 1.5} transform={`translate(70, 20)`}>
         {uState &&
           uState.features &&
           uState.features.map((d, i) => {
             const crimes = d.crime;
-            const fill = crimes ? colorScale(crimes) : "#313131";
-
+            const fillColor = crimes ? colorScale(crimes) : "#313131";
+            const isSelected = selectedPath && d.properties.name === selectedPath.properties.name;
+            const fill = isSelected ? tinycolor(fillColor).darken(15).toString() : fillColor;
             if (!path) {
               return null;
             }
@@ -116,15 +146,17 @@ function StateChart({ data, property }) {
               <Path
                 key={i}
                 d={path(d)}
-                transform={`translate(70, 20)`}
                 strokeWidth={1}
                 stroke="gray"
                 fill={fill}
+                onPressIn={(event) => handlePressIn(d, event)}
+                onMouseOver={(event) => handlePressIn(d, event)}
               />
             );
           })}
       </Svg>
-    </View>
+      <Tooltip visible={tooltipVisible} position={tooltipPosition} content={tooltipContent}/>
+      </View>
   );
 }
 
