@@ -3,7 +3,10 @@
 There are two main components in this library. One is `StateChart.js` and another is `map.js` in `/src/components/` folder. The first one will show a state map in the broswer. This component is not migrate to React Native.
 
 ### How to use
- Please run `npm start` and press web to check it. Another  show a world map in the screen. Please run `npm start` and follow the instructions to show on the emulator or real phone.
+To install the project, navigate to the directory and run:
+- `yarn global add expo-cli`
+- `yarn install`
+- Please run `yarn start` and choose web (press `w`) to check for a world map in the screen. Please run `yarn start` and follow the instructions to show on the emulator or real phone.
 
 ### Reference that you may need
 a. [Creating a d3 Map in a Mobile App Using React Native](https://medium.com/nightingale/creating-a-d3-map-in-a-mobile-app-using-react-native-46da1e6b3be6)
